@@ -1,4 +1,4 @@
-# EdgeAI - LLaVA on Raspberry Pi 4 (Multimodal Model)
+# EdgeAI - LLaVA on Raspberry Pi 5 (Multimodal Model)
 
 _From mathematical foundations to edge implementation_
 
