@@ -22,11 +22,15 @@ _From mathematical foundations to edge implementation_
 
 2 — Mistral AI 7B
 
-2.1 — Sliding Window Attention 
+2.1 — Root Mean Square Normalization
 
-2.2 — Rolling Buffer Cache
+2.2 — Rotary Position Embedding
 
-2.3 — Pre-fill and Chunking
+2.3 — Self-Attention (GQA, SWA)
+
+2.4 — Rolling Buffer Cache
+
+2.5 — Pre-fill and Chunking
 
 3 — EdgeAI Implementation
 
@@ -42,7 +46,19 @@ With its blend of power, efficiency, and transparency, Mistral 7B stands as a be
 
 ## 2 - Mistral AI 7B
 
-Mistral 7B is based on a transformer architecture. The main parameters of the architecture are summarized in Table.
+Mistral 7B is based on a transformer architecture. In the following sections we will explore these advancements, which include:
+
+- **RMS Normalization**: replacing Layer Normalization;
+
+- **Rotary Position Embedding (RoPE)**: replacing Absolute Positional Encoding;
+
+- **Grouped Query Attention (GQA)**: replacing Multi-Head Attention;
+
+- **Sliding Window Attention (SWA)**: improving training and inference speed, particularly for long sequences;
+
+- **Rolling Buffer KV Cache**: improving training and inference speed, in conjunction with SWA;
+
+- **SwiGLU Activation Function**: replacing ReLU in the Feed Forward sub-layers.
 
 ![Figure 1](./figures/fig01.png)
 
@@ -96,7 +112,120 @@ $$
 In computational terms, **RMSNorm reduces the complexity of normalization calculations** and saves memory, making it more efficient for models, which handle billions of parameters. However, because it does not center the data, it may slightly alter the learning dynamics compared to LayerNorm. Nonetheless, its impact on convergence has been positive in various **efficiency-optimized transformers**, justifying its adoption.
 
 
-### 2.2 — Self-Attention (GQA, SWA) 
+
+### 2.2 — Rotary Position Embedding (RoPE)
+
+Rotary Position Embeddings (RoPE) is a technique for encoding **relative positional information** directly into the **self-attention mechanism** of transformer models. Unlike absolute positional encodings (e.g., sinusoidal or learned embeddings), RoPE **preserves distance relationships** between tokens while allowing the model to generalize to longer sequences beyond its training range.
+
+
+
+
+
+
+Given a token embedding \( x \) at position \( i \), RoPE applies a **rotation matrix** \( R_i \) to encode its positional information:
+
+\[
+\text{RoPE}(x, i) = R_i \cdot x
+\]
+
+where:
+- \( R_i \) is a **learned or fixed rotation matrix** that encodes position \( i \).
+- The transformation is applied **directly to the self-attention queries and keys** before computing attention scores.
+
+Instead of adding positional embeddings like in traditional transformers, RoPE **modifies queries (\( Q \)) and keys (\( K \)) multiplicatively**.
+
+
+RoPE is efficiently implemented using complex numbers, where embeddings are treated as pairs of values corresponding to **even and odd indices**:
+
+\[
+\text{RoPE}(x, i) = \begin{bmatrix} x_{\text{even}} \\ x_{\text{odd}} \end{bmatrix} \cdot e^{i \theta_i}
+\]
+
+where:
+- \( e^{i \theta_i} \) is a complex-valued rotation that depends on position \( i \).
+- The **angle \( \theta_i \)** determines the rotation at each position.
+
+Using a frequency-based positional encoding:
+
+\[
+\theta_i = \theta_0^i
+\]
+
+where \( \theta_0 \) is a base frequency (e.g., \( \theta_0 = 10000^{-\frac{2j}{d}} \) for dimension \( d \) and index \( j \)). A graphic illustration of RoPE is shown in:
+
+
+![Figure 1](./figures/fig02.png)
+
+
+
+This rotation **preserves the relative distances between tokens** while naturally encoding their positions.
+
+
+RoPE is applied **before computing attention scores**, modifying queries (\( Q \)) and keys (\( K \)) as follows:
+
+\[
+Q'_i = R_i \cdot Q_i, \quad K'_i = R_i \cdot K_i
+\]
+
+Then, attention is computed as usual:
+
+\[
+\text{Attention}(Q', K', V) = \text{softmax} \left( \frac{Q' K'^T}{\sqrt{d_k}} \right) V
+\]
+
+This approach ensures that the **dot product between queries and keys naturally encodes relative positions**, eliminating the need for separate positional embeddings.
+
+
+Consider two token embeddings:
+
+\[
+x_1 = [1.0, 2.0], \quad x_2 = [3.0, 4.0]
+\]
+
+Assume a simple **rotation matrix \( R_i \)** for position \( i \):
+
+\[
+R_i =
+\begin{bmatrix}
+\cos(\theta_i) & -\sin(\theta_i) \\
+\sin(\theta_i) & \cos(\theta_i)
+\end{bmatrix}
+\]
+
+For positions \( i = 1 \) and \( i = 2 \), using \( \theta_1 = 30^\circ \) and \( \theta_2 = 60^\circ \):
+
+\[
+R_1 =
+\begin{bmatrix}
+0.866 & -0.5 \\
+0.5 & 0.866
+\end{bmatrix}
+\]
+
+\[
+R_2 =
+\begin{bmatrix}
+0.5 & -0.866 \\
+0.866 & 0.5
+\end{bmatrix}
+\]
+
+Applying RoPE:
+
+\[
+x_1' = R_1 \cdot x_1 = \begin{bmatrix} 0.866 \cdot 1 - 0.5 \cdot 2 \\ 0.5 \cdot 1 + 0.866 \cdot 2 \end{bmatrix} = \begin{bmatrix} -0.134 \\ 2.232 \end{bmatrix}
+\]
+
+\[
+x_2' = R_2 \cdot x_2 = \begin{bmatrix} 0.5 \cdot 3 - 0.866 \cdot 4 \\ 0.866 \cdot 3 + 0.5 \cdot 4 \end{bmatrix} = \begin{bmatrix} -1.964 \\ 4.598 \end{bmatrix}
+\]
+
+This transformation **preserves the relative positions between tokens**, helping the model understand relationships better.
+
+
+
+
+### 2.3 — Self-Attention (GQA, SWA) 
 
 Self-attention is a key mechanism in transformer architectures to efficiently process and capture relationships between tokens. The **Mistral 7B** model incorporates optimizations such as **Grouped Query Attention (GQA)** and **Sliding Window Attention (SWA)** to improve efficiency and scalability when handling long sequences.
 
@@ -109,17 +238,16 @@ $$
 $$
 
 where:
-- $Q = XW_Q $ (queries)
-- $K = XW_K $ (keys)
-- $V = XW_V $ (values)
-- $d_k $ is the dimensionality of each key and query
-- $W_Q, W_K, W_V $ are trainable projection matrices
+- $Q = XW_Q $ (queries);
+- $K = XW_K $ (keys);
+- $V = XW_V $ (values);
+- $d_k $ is the dimensionality of each key and query;
+- $W_Q, W_K, W_V $ are trainable projection matrices.
 
 Traditional self-attention scales poorly for large sequences due to the **$O(n^2) $** complexity. **GQA** and **SWA** address this issue.
 
----
 
-#### 2.2.1 — Grouped Query Attention (GQA)
+#### 2.3.1 — Grouped Query Attention (GQA)
 
 **GQA** reduces memory usage by decreasing the number of **key-value heads**, which optimizes computational efficiency while maintaining strong model performance. Instead of having independent query, key, and value heads for each attention head, GQA **groups multiple queries to share the same key-value representations**.
 
@@ -142,9 +270,11 @@ This results in:
 
 Consider a model with **h = 8 query heads** and **g = 2 key-value heads**. Instead of computing attention for 8 separate key-value sets, the model **groups queries into 2 sets**, effectively reducing computation.
 
----
+A comparison of MHA, MQA, and GQA is shown in the below. Multi-head attention has H query, key, and value heads. Multi-query attention shares single key and value heads across all query heads. Grouped-query attention instead shares single key and value heads for each group of query heads, interpolating between multi-head and multi-query attention.
 
-#### 2.2.2 — Sliding Window Attention (SWA)
+![Figure 1](./figures/fig03.png)
+
+#### 2.3.2 — Sliding Window Attention (SWA)
 
 **SWA** improves performance by **restricting attention to a local window**, making it more efficient for long sequences. Instead of attending to all tokens in the sequence, each token attends only to a fixed-sized window of surrounding tokens.
 
@@ -168,42 +298,28 @@ This significantly improves:
 - **Speed**, as fewer attention weights need to be computed.
 - **Memory efficiency**, since the attention matrix size is reduced.
 
----
 
-#### 2.2.3 — Rotary Position Embeddings (RoPE)
+For exemplo, the number of operations in vanilla attention is quadratic in the sequence length, and the memory increases linearly with the number of tokens. At inference time, this incurs higher latency and smaller throughput due to reduced cache availability. To alleviate this issue, we use sliding window attention: each token can attend to at most W tokens from the previous layer (here, W = 3). Note that tokens outside the sliding window still influence next word prediction. At each attention layer, information can move forward by W tokens. Hence, after k attention layers, information can move forward by up to k × W tokens.
 
-**RoPE** introduces **relative positional information** into the attention mechanism by applying a **rotational transformation** to the queries and keys.
- 
-
-Given a token representation $x $ at position $i $, RoPE applies a **complex-valued rotation**:
-
-$$
-\text{RoPE}(x, i) = x e^{i \theta_i}
-$$
-
-where:
-- $\theta_i = \theta_0^i $ is a **frequency-based position encoding**.
-- The rotation is applied directly to queries and keys before attention is computed.
-
-This allows:
-- **Better generalization to long sequences**.
-- **Implicit modeling of relative positions** without needing explicit embeddings.
+![Figure 1](./figures/fig04.png)
 
 
-If two tokens are **64 positions apart**, RoPE naturally encodes this separation in their transformed embeddings, maintaining meaningful positional relationships even for extrapolated sequences.
+### 2.4 — Rolling Buffer Cache
+
+A fixed attention span means that we can limit our cache size using a rolling buffer cache. The cache has a fixed size of W, and the keys and values for the timestep i are stored in position i mod W of the cache. As a result, when the position i is larger than W, past values in the cache are overwritten, and the size of the cache stops increasing. We provide an illustration in Figure 2 for W = 3. On a sequence length of 32k tokens, this reduces the cache memory usage by 8x, without impacting the model quality.
+
+For exemplo, the cache has a fixed size of W = 4. Keys and values for position i are stored in position i mod W of the cache. When the position i is larger than W, past values in the cache are overwritten. The hidden state corresponding to the latest generated tokens are colored in orange.
+
+![Figure 1](./figures/fig05.png)
 
 
+### 2.5 — Pre-fill and Chunking
 
+When generating a sequence, we need to predict tokens one-by-one, as each token is conditioned on the previous ones. However, the prompt is known in advance, and we can pre-fill the (k, v) cache with the prompt. If the prompt is very large, we can chunk it into smaller pieces, and pre-fill the cache with each chunk. For this purpose, we can select the window size as our chunk size. For each chunk, we thus need to compute the attention over the cache and over the chunk. Figure in below shows how the attention mask works over both the cache and the chunk.
 
-### 2.3 — Rolling Buffer Cache
+![Figure 1](./figures/fig06.png)
 
-
-
-
-### 2.3 — Pre-fill and Chunking
-
-
-
+During pre-fill of the cache, long sequences are chunked to limit memory usage. We process a sequence in three chunks, "The cat sat on", "the mat and saw", "the dog go to". The figure shows what happens for the third chunk ("the dog go to"): it attends itself using a causal mask (rightmost block), attends the cache using a sliding window (center block), and does not attend to past tokens as they are outside of the sliding window (left block).
 
 
 ## 3 - EdgeAI Implementation
@@ -239,41 +355,36 @@ curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 
-### 3.3 - Run DeepSeek
+### 3.3 - Run Mistral AI_ 7B
 
-Link: [deepseek-r1 Models](https://ollama.com/library/deepseek-r1:1.5b)
+Link: [Mistral AI_ 7B Models](https://ollama.com/library/mistral)
 
-![Figure 3](./figures/fig22.png)
+![Figure 3](./figures/fig07.png)
 
-
-```bash
-ollama run deepseek-r1:{version}
-```
-
-We use in this example the 1.5b version
 
 ```bash
-ollama run deepseek-r1:1.5b
+ollama run mistral
 ```
 
-![Figure 3](./figures/fig23.png)
+![Figure 3](./figures/fig08.png)
 
 
 ### 3.4 - Results for question
 
-The question: explain the LLM models
+The question: explain what is machine learning models
 
 
-![Figure 3](./figures/fig24.png)
-
+![Figure 3](./figures/fig09.png)
 
 
 
 
 **References:**
 
-- https://ollama.com/library/deepseek-r1:1.5b
+- https://arxiv.org/abs/2310.06825
 
-- https://arxiv.org/abs/2501.12948
+- https://arxiv.org/abs/2104.09864
 
-- https://www.geeksforgeeks.org/deepseek-r1-technical-overview-of-its-architecture-and-innovations/
+- https://arxiv.org/abs/2305.13245
+
+- https://medium.com/towards-data-science/mistral-7b-explained-towards-more-efficient-language-models-7f9c6e6b7251
