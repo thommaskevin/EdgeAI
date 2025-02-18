@@ -321,6 +321,61 @@ When generating a sequence, we need to predict tokens one-by-one, as each token 
 
 During pre-fill of the cache, long sequences are chunked to limit memory usage. We process a sequence in three chunks, "The cat sat on", "the mat and saw", "the dog go to". The figure shows what happens for the third chunk ("the dog go to"): it attends itself using a causal mask (rightmost block), attends the cache using a sliding window (center block), and does not attend to past tokens as they are outside of the sliding window (left block).
 
+### 2.6 — Swish Gated Linear Unit (SwiGLU)
+
+Swish Gated Linear Unit (**SwiGLU**) is an advanced activation mechanism that improves upon traditional feedforward layers in transformers. SwiGLU enhances model expressivity by **gating the feedforward network (FFN) output using the Swish activation function** instead of the traditional ReLU-based approach.
+
+SwiGLU is used in state-of-the-art models, including **Mistral 7B, GPT-4, PaLM, and LLaMA**, to improve efficiency and performance.
+
+SwiGLU modifies the traditional **FeedForward Neural Network (FFN)** in transformers. The traditional FFN applies two linear layers with a ReLU activation in between:
+
+\[
+\text{FFN}(x) = \sigma(W_1 x + b_1) W_2 + b_2
+\]
+
+where:
+- \( x \) is the input token representation.
+- \( W_1 \in \mathbb{R}^{d_{\text{model}} \times d_{\text{hidden}}} \) and \( W_2 \in \mathbb{R}^{d_{\text{hidden}} \times d_{\text{model}}} \) are weight matrices.
+- \( b_1, b_2 \) are bias terms.
+- \( \sigma \) (ReLU) is an activation function.
+- \( d_{\text{hidden}} \) is typically **4× larger** than \( d_{\text{model}} \) for greater capacity.
+
+
+SwiGLU **introduces gating**, where the first linear layer is split into **two parallel projections**:
+
+\[
+\text{SwiGLU}(x) = \left( W_1 x + b_1 \right) \odot \text{Swish}(W_2 x + b_2) W_3 + b_3
+\]
+
+where:
+- \( W_1, W_2 \in \mathbb{R}^{d_{\text{model}} \times d_{\text{hidden}}} \) are two independent weight matrices.
+- \( W_3 \in \mathbb{R}^{d_{\text{hidden}} \times d_{\text{model}}} \) is the output projection.
+- \( \odot \) is element-wise multiplication.
+- **Swish activation** is applied:  
+  \[
+  \text{Swish}(x) = x \cdot \sigma(x) = x \cdot \frac{1}{1 + e^{-x}}
+  \]
+- This gate controls which values are passed through, **increasing non-linearity** and **improving feature selection**.
+
+
+
+
+
+SwiGLU adds a **modest increase** in computations:
+- **Extra linear layer** \( (W_2 x) \) compared to standard FFN.
+- However, due to better feature selection, models can **reduce layer sizes** while maintaining performance.
+- **Memory-efficient**: Removes unnecessary activations dynamically.
+
+
+
+| Feature | ReLU | SwiGLU |
+|---------|------|--------|
+| **Activation Function** | Hard cutoff at 0 | Smooth transition |
+| **Gradient Flow** | Can die (zero gradient) | Always nonzero |
+| **Expressivity** | Limited (linear separation) | High (multiplicative gating) |
+| **Training Stability** | May suffer from saturation | More stable |
+
+
 
 ## 3 - EdgeAI Implementation
 
