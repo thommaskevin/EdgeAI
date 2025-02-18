@@ -32,7 +32,7 @@ _From mathematical foundations to edge implementation_
 
 ## 1 - Introduction
 
-eepSeek-R1 is an open-source reasoning model developed by the Chinese AI company DeepSeek. Released on January 20, 2025, it is designed to excel in tasks requiring logical inference, mathematical problem-solving, and real-time decision-making. Notably, DeepSeek-R1's performance is on par with OpenAI's o1 model, positioning it as a significant advancement in artificial intelligence.
+DeepSeek-R1 is an open-source reasoning model developed by the Chinese AI company DeepSeek. Released on January 20, 2025, it is designed to excel in tasks requiring logical inference, mathematical problem-solving, and real-time decision-making. Notably, DeepSeek-R1's performance is on par with OpenAI's o1 model, positioning it as a significant advancement in artificial intelligence.
 
 The development of DeepSeek-R1 involved a unique training methodology. The initial version, DeepSeek-R1-Zero, was trained exclusively using large-scale reinforcement learning without supervised fine-tuning. This approach led to the emergence of powerful reasoning behaviors. Building upon this, DeepSeek-R1 was further refined to improve readability and language consistency, resulting in a model capable of sophisticated reasoning tasks.
 
