@@ -122,36 +122,36 @@ Rotary Position Embeddings (RoPE) is a technique for encoding **relative positio
 
 
 
-Given a token embedding \( x \) at position \( i \), RoPE applies a **rotation matrix** \( R_i \) to encode its positional information:
+Given a token embedding $ x $ at position $ i $, RoPE applies a **rotation matrix** $ R_i $ to encode its positional information:
 
-\[
+$$
 \text{RoPE}(x, i) = R_i \cdot x
-\]
+$$
 
 where:
-- \( R_i \) is a **learned or fixed rotation matrix** that encodes position \( i \).
+- $ R_i $ is a **learned or fixed rotation matrix** that encodes position $ i $.
 - The transformation is applied **directly to the self-attention queries and keys** before computing attention scores.
 
-Instead of adding positional embeddings like in traditional transformers, RoPE **modifies queries (\( Q \)) and keys (\( K \)) multiplicatively**.
+Instead of adding positional embeddings like in traditional transformers, RoPE **modifies queries ($ Q $) and keys ($ K $) multiplicatively**.
 
 
 RoPE is efficiently implemented using complex numbers, where embeddings are treated as pairs of values corresponding to **even and odd indices**:
 
-\[
+$$
 \text{RoPE}(x, i) = \begin{bmatrix} x_{\text{even}} \\ x_{\text{odd}} \end{bmatrix} \cdot e^{i \theta_i}
-\]
+$$
 
 where:
-- \( e^{i \theta_i} \) is a complex-valued rotation that depends on position \( i \).
-- The **angle \( \theta_i \)** determines the rotation at each position.
+- $ e^{i \theta_i} $ is a complex-valued rotation that depends on position $ i $.
+- The **angle $ \theta_i $** determines the rotation at each position.
 
 Using a frequency-based positional encoding:
 
-\[
+$$
 \theta_i = \theta_0^i
-\]
+$$
 
-where \( \theta_0 \) is a base frequency (e.g., \( \theta_0 = 10000^{-\frac{2j}{d}} \) for dimension \( d \) and index \( j \)). A graphic illustration of RoPE is shown in:
+where $ \theta_0 $ is a base frequency (e.g., $ \theta_0 = 10000^{-\frac{2j}{d}} $ for dimension $ d $ and index $ j $). A graphic illustration of RoPE is shown in:
 
 
 ![Figure 1](./figures/fig02.png)
@@ -161,64 +161,64 @@ where \( \theta_0 \) is a base frequency (e.g., \( \theta_0 = 10000^{-\frac{2j}{
 This rotation **preserves the relative distances between tokens** while naturally encoding their positions.
 
 
-RoPE is applied **before computing attention scores**, modifying queries (\( Q \)) and keys (\( K \)) as follows:
+RoPE is applied **before computing attention scores**, modifying queries ($ Q $) and keys ($ K $) as follows:
 
-\[
+$$
 Q'_i = R_i \cdot Q_i, \quad K'_i = R_i \cdot K_i
-\]
+$$
 
 Then, attention is computed as usual:
 
-\[
+$$
 \text{Attention}(Q', K', V) = \text{softmax} \left( \frac{Q' K'^T}{\sqrt{d_k}} \right) V
-\]
+$$
 
 This approach ensures that the **dot product between queries and keys naturally encodes relative positions**, eliminating the need for separate positional embeddings.
 
 
 Consider two token embeddings:
 
-\[
+$$
 x_1 = [1.0, 2.0], \quad x_2 = [3.0, 4.0]
-\]
+$$
 
-Assume a simple **rotation matrix \( R_i \)** for position \( i \):
+Assume a simple **rotation matrix $ R_i $** for position $ i $:
 
-\[
+$$
 R_i =
 \begin{bmatrix}
 \cos(\theta_i) & -\sin(\theta_i) \\
 \sin(\theta_i) & \cos(\theta_i)
 \end{bmatrix}
-\]
+$$
 
-For positions \( i = 1 \) and \( i = 2 \), using \( \theta_1 = 30^\circ \) and \( \theta_2 = 60^\circ \):
+For positions $ i = 1 $ and $ i = 2 $, using $ \theta_1 = 30^\circ $ and $ \theta_2 = 60^\circ $:
 
-\[
+$$
 R_1 =
 \begin{bmatrix}
 0.866 & -0.5 \\
 0.5 & 0.866
 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 R_2 =
 \begin{bmatrix}
 0.5 & -0.866 \\
 0.866 & 0.5
 \end{bmatrix}
-\]
+$$
 
 Applying RoPE:
 
-\[
+$$
 x_1' = R_1 \cdot x_1 = \begin{bmatrix} 0.866 \cdot 1 - 0.5 \cdot 2 \\ 0.5 \cdot 1 + 0.866 \cdot 2 \end{bmatrix} = \begin{bmatrix} -0.134 \\ 2.232 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 x_2' = R_2 \cdot x_2 = \begin{bmatrix} 0.5 \cdot 3 - 0.866 \cdot 4 \\ 0.866 \cdot 3 + 0.5 \cdot 4 \end{bmatrix} = \begin{bmatrix} -1.964 \\ 4.598 \end{bmatrix}
-\]
+$$
 
 This transformation **preserves the relative positions between tokens**, helping the model understand relationships better.
 
