@@ -65,7 +65,9 @@ The Retriever is typically implemented using a **dense retrieval model**, such a
 
 Given a query $q$ and a corpus of documents $D = \{d_1, d_2, \dots, d_N\} $, the Retriever computes the similarity between the query and each document using their respective embeddings. The similarity score is calculated as the dot product of the query embedding $\mathbf{q}$ and the document embedding $\mathbf{d}_i$:
 
-$$\text{score}(q, d_i) = \mathbf{q}^\top \mathbf{d}_i$$
+$$
+\text{score}(q, d_i) = \mathbf{q}^\top \mathbf{d}_i
+$$
 
 The top-$k$ documents with the highest similarity scores are retrieved and passed to the Generator.
 
@@ -74,7 +76,9 @@ The top-$k$ documents with the highest similarity scores are retrieved and passe
 
 The Retriever is trained using a contrastive learning objective. Given a query $q$ and a positive document $d^+$ (a document known to be relevant to the query), the model is trained to maximize the similarity between $q$ and $d^+$ while minimizing the similarity between $q$ and negative documents $d^-$. The loss function for training the Retriever is:
 
-$$\mathcal{L}_{\text{retriever}} = -\log \frac{\exp(\mathbf{q}^\top \mathbf{d}^+)}{\exp(\mathbf{q}^\top \mathbf{d}^+) + \sum_{d^-} \exp(\mathbf{q}^\top \mathbf{d}^-)}$$
+$$
+\mathcal{L}_{\text{retriever}} = -\log \frac{\exp(\mathbf{q}^\top \mathbf{d}^+)}{\exp(\mathbf{q}^\top \mathbf{d}^+) + \sum_{d^-} \exp(\mathbf{q}^\top \mathbf{d}^-)}
+$$
 
 
 This approach ensures that the Retriever learns to distinguish between relevant and irrelevant documents effectively.
@@ -89,7 +93,9 @@ The **Generator** is a generative language model that produces text based on the
 #### 2.2.1 — Autoregressive Text Generation
 The Generator is typically implemented as an autoregressive model, such as T5, GPT, or BART. It generates text token by token, conditioning each step on the previously generated tokens, the query, and the retrieved documents. The probability of generating a sequence of tokens $y = (y_1, y_2, \dots, y_T)$ is modeled as:
 
-$$P(y | q, D) = \prod_{t=1}^T P(y_t | y_{<t}, q, D)$$
+$$
+P(y | q, D) = \prod_{t=1}^T P(y_t | y_{<t}, q, D)
+$$
 
 where:
 - $y_t$ is the token generated at step $t$,
@@ -100,14 +106,18 @@ where:
 #### 2.2.2 — Incorporating Retrieved Documents
 The retrieved documents $D = \{d_{i_1}, d_{i_2}, \dots, d_{i_k}\} $ are concatenated with the query $q$ and fed into the Generator as input. This allows the model to condition its output on both the query and the external knowledge contained in the documents. The input to the Generator can be represented as:
 
-$$\text{input} = [q; d_{i_1}; d_{i_2}; \dots; d_{i_k}]$$
+$$
+\text{input} = [q; d_{i_1}; d_{i_2}; \dots; d_{i_k}]
+$$
 
 where $[;]$ denotes concatenation.
 
 #### 2.2.3 — Training the Generator
 The Generator is trained using a standard sequence-to-sequence objective. Given a query $q$, retrieved documents $D$, and a target sequence $y$, the model is trained to minimize the negative log-likelihood of the target sequence:
 
-$$\mathcal{L}_{\text{generator}} = -\sum_{t=1}^T \log P(y_t | y_{<t}, q, D)$$
+$$
+\mathcal{L}_{\text{generator}} = -\sum_{t=1}^T \log P(y_t | y_{<t}, q, D)
+$$
 
 
 ### 2.3 — Joint Training of Retriever and Generator
@@ -117,7 +127,9 @@ In the RAG framework, the Retriever and Generator are trained jointly to optimiz
 
 The overall loss function for RAG is a combination of the Retriever loss and the Generator loss:
 
-$$\mathcal{L}_{\text{RAG}} = \mathcal{L}_{\text{retriever}} + \mathcal{L}_{\text{generator}}$$
+$$
+\mathcal{L}_{\text{RAG}} = \mathcal{L}_{\text{retriever}} + \mathcal{L}_{\text{generator}}
+$$
 
 During training, the Retriever is updated to retrieve documents that maximize the likelihood of generating the correct target sequence, while the Generator is trained to produce accurate and fluent text based on the retrieved documents.
 
@@ -129,7 +141,9 @@ During inference, the RAG model follows a two-step process:
 
 The RAG framework can be formalized as a probabilistic model that combines document retrieval with text generation. The marginal probability of the response $y$ given the query $q$ is:
 
-$$P(y | q) = \sum_{d \in D} P(d | q) \cdot P(y | q, d)$$
+$$
+P(y | q) = \sum_{d \in D} P(d | q) \cdot P(y | q, d)
+$$
 
 where:
 
