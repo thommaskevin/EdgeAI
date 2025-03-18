@@ -63,7 +63,7 @@ The Retriever is responsible for sourcing relevant information from an external 
 
 The Retriever is typically implemented using a **dense retrieval model**, such as DPR (Dense Passage Retriever). Unlike traditional sparse retrieval methods (e.g., TF-IDF or BM25), which rely on keyword matching, dense retrieval uses dense vector representations (embeddings) to capture semantic similarities between queries and documents.
 
-Given a query $q$ and a corpus of documents $D = \{d_1, d_2, \dots, d_N\}$, the Retriever computes the similarity between the query and each document using their respective embeddings. The similarity score is calculated as the dot product of the query embedding $\mathbf{q}$ and the document embedding $\mathbf{d}_i$:
+Given a query $q$ and a corpus of documents $D = \{d_1, d_2, \dots, d_N\} $, the Retriever computes the similarity between the query and each document using their respective embeddings. The similarity score is calculated as the dot product of the query embedding $\mathbf{q}$ and the document embedding $\mathbf{d}_i$:
 
 $$
 \text{score}(q, d_i) = \mathbf{q}^\top \mathbf{d}_i
@@ -77,7 +77,7 @@ The top-$k$ documents with the highest similarity scores are retrieved and passe
 The Retriever is trained using a contrastive learning objective. Given a query $q$ and a positive document $d^+$ (a document known to be relevant to the query), the model is trained to maximize the similarity between $q$ and $d^+$ while minimizing the similarity between $q$ and negative documents $d^-$. The loss function for training the Retriever is:
 
 $$
-\mathcal{L}_{\text{retriever}} = -\log \frac{\exp(\mathbf{q}^\top \mathbf{d}^+)}{\exp(\mathbf{q}^\top \mathbf{d}^+) + \sum_{d^-} \exp(\mathbf{q}^\top \mathbf{d}^-)}.
+\mathcal{L}_{\text{retriever}} = -\log \frac{\exp(\mathbf{q}^\top \mathbf{d}^+)}{\exp(\mathbf{q}^\top \mathbf{d}^+) + \sum_{d^-} \exp(\mathbf{q}^\top \mathbf{d}^-)}
 $$
 
 This approach ensures that the Retriever learns to distinguish between relevant and irrelevant documents effectively.
@@ -103,7 +103,7 @@ where:
 - $D$ is the set of retrieved documents.
 
 #### 2.2.2 — Incorporating Retrieved Documents
-The retrieved documents $D = \{d_{i_1}, d_{i_2}, \dots, d_{i_k}\}$ are concatenated with the query $q$ and fed into the Generator as input. This allows the model to condition its output on both the query and the external knowledge contained in the documents. The input to the Generator can be represented as:
+The retrieved documents $D = \{d_{i_1}, d_{i_2}, \dots, d_{i_k}\} $ are concatenated with the query $q$ and fed into the Generator as input. This allows the model to condition its output on both the query and the external knowledge contained in the documents. The input to the Generator can be represented as:
 
 $$
 \text{input} = [q; d_{i_1}; d_{i_2}; \dots; d_{i_k}],
