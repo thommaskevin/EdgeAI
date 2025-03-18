@@ -1,4 +1,4 @@
-# EdgeAI -Mistral AI _on Raspberry Pi
+# EdgeAI - Mistral AI _on Raspberry Pi
 
 _From mathematical foundations to edge implementation_
 
