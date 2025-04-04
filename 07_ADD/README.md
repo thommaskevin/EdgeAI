@@ -67,9 +67,9 @@ where $α_t = 1 - β_t$ and $ᾱ_t = \prod_{i=1}^t α_i$.
 
 The goal is to learn the reverse process $p_θ(x_{t-1} | x_t)$ to remove the noise from $x_t$ back to $x_0$. This is typically parameterized by training a neural network, often a U-Net [6], denoted as $ε_θ(x_t, t)$, to predict the noise $ε$ that was added to obtain $x_t$ from $x_0$, given the noisy image $x_t$ and the time step $t$. The objective function simplifies to a denoising score-matching loss:
 
-    $$ 
-    L_{DM} = \mathbb{E}_{t, x_0, \epsilon} \left[ || \epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \, \epsilon, t) ||^2 \right] \quad (2) 
-    $$
+$$ 
+L_{DM} = \mathbb{E}_{t, x_0, \epsilon} \left[ || \epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \, \epsilon, t) ||^2 \right] \quad (2) 
+$$
 
 where $t$ is uniformly sampled from ${1, ..., T}$, $x_0$ is a sample from the data distribution, and $ε ~ N(0, I)$.
 
