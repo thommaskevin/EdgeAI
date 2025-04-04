@@ -136,9 +136,10 @@ Similarly, the student model $ε_S$ predicts the noise $ε_S(x_t, t)$. Its corre
 
 Distillation Loss ($L_{distill}$), this loss measures the discrepancy between the student’s prediction and the teacher’s prediction. It is often an L1 or L2 norm, applied either to the noise predictions or the clean image predictions:
 
-  $$
-  L_{\text{distill}} = \mathbb{E}_{x_0, \epsilon, t} \left[ w(t) \cdot \| \epsilon_S(x_t, t) - \text{stop\_grad}(\epsilon_T(x_t, t)) \|^p \right] \quad (5)
-  $$
+$$
+  L_{\text{distill}} = \mathbb{E}_{x_0, \epsilon, t} \left[ w(t) \cdot \| \epsilon_S(x_t, t) - \text{stop\_grad}(\epsilon_T(x_t, t)) \|^p \right] 
+\quad (5)
+$$
 
 This is the noise-prediction formulation; an $x_0$-prediction formulation is also common. Here, $p$ is typically 1 or 2, and $w(t)$ is an optional weighting function based on the timestep $t$. This loss encourages the student to match the functional mapping learned by the teacher.
 
