@@ -67,8 +67,9 @@ where $α_t = 1 - β_t$ and $ᾱ_t = \prod_{i=1}^t α_i$.
 
 The goal is to learn the reverse process $p_θ(x_{t-1} | x_t)$ to remove the noise from $x_t$ back to $x_0$. This is typically parameterized by training a neural network, often a U-Net [6], denoted as $ε_θ(x_t, t)$, to predict the noise $ε$ that was added to obtain $x_t$ from $x_0$, given the noisy image $x_t$ and the time step $t$. The objective function simplifies to a denoising score-matching loss:
 
-$$ L_{DM} = \mathbb{E}_{t, x_0, \epsilon} \left[ || \epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \, \epsilon, t) ||^2 \right] \quad (2) 
-$$
+    $$ 
+    L_{DM} = \mathbb{E}_{t, x_0, \epsilon} \left[ || \epsilon - \epsilon_\theta(\sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \, \epsilon, t) ||^2 \right] \quad (2) 
+    $$
 
 where $t$ is uniformly sampled from ${1, ..., T}$, $x_0$ is a sample from the data distribution, and $ε ~ N(0, I)$.
 
@@ -137,10 +138,10 @@ Similarly, the student model $ε_S$ predicts the noise $ε_S(x_t, t)$. Its corre
 
 Distillation Loss ($L_{distill}$), this loss measures the discrepancy between the student’s prediction and the teacher’s prediction. It is often an L1 or L2 norm, applied either to the noise predictions or the clean image predictions:
 
-$$
-L_{\text{distill}} = \mathbb{E}_{x_0, \epsilon, t} \left[ w(t) \cdot \left\| \epsilon_S(x_t, t) - \operatorname{stop\_grad}(\epsilon_T(x_t, t)) \right\|^p \right]
-\quad (5)
-$$
+    $$
+    L_{\text{distill}} = \mathbb{E}_{x_0, \epsilon, t} \left[ w(t) \cdot \| \epsilon_S(x_t, t) - \text{stop\_grad}(\epsilon_T(x_t, t)) \|^p \right] 
+    \quad (5)
+    $$
 
 This is the noise-prediction formulation; an $x_0$-prediction formulation is also common. Here, $p$ is typically 1 or 2, and $w(t)$ is an optional weighting function based on the timestep $t$. This loss encourages the student to match the functional mapping learned by the teacher.
 
