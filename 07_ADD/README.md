@@ -24,15 +24,17 @@ _From mathematical foundations to edge implementation_
 
 2.1 — Retriever
 
-2.2 — Generator
+2.2 — Knowledge Distillation for Diffusion Models
 
-2.3 — Joint Training of Retriever and Generator
+3 — Adversarial Diffusion Distillation
 
-2.4 — Inference in RAG
+3.1 — Architecture
 
-2.5 — Extensions and Variants of RAG
+3.2 — Functional Blocks and Training Objectives
 
-3 — EdgeAI Implementation
+3.3 — Training Process
+
+4 — EdgeAI Implementation
 
 ---
 
