@@ -2,6 +2,18 @@
 
 This repository contains experiments and implementations focused on **Edge AI** — running artificial intelligence models on resource-constrained devices. Each folder represents a different model, method, or approach optimized for edge deployment.
 
+**Social media:**
+
+👨🏽‍💻 Github: [thommaskevin/TinyML](https://github.com/thommaskevin/TinyML)
+
+👷🏾 Linkedin: [Thommas Kevin](https://www.linkedin.com/in/thommas-kevin-ab9810166/)
+
+📽 Youtube: [Thommas Kevin](https://www.youtube.com/channel/UC7uazGXaMIE6MNkHg4ll9oA)
+
+:pencil2:CV Lattes CNPq: [Thommas Kevin Sales Flores](http://lattes.cnpq.br/0630479458408181)
+
+👨🏻‍🏫 Research group: [Conecta.ai](https://conect2ai.dca.ufrn.br/)
+
 ## 📁 Directory Structure
 
 | Folder            | Description                                                                 |
