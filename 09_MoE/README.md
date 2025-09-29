@@ -349,3 +349,13 @@ streamlit run app.py
 
 
 ![Figure 7](./figures/fig07.gif)
+
+
+## References
+
+📋 [nanoMoE: Mixture-of-Experts (MoE) LLMs from Scratch in PyTorch](https://cameronrwolfe.substack.com/p/nano-moe)
+
+📋 [A Visual Guide to Mixture of Experts (MoE)](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-mixture-of-experts)
+
+
+
