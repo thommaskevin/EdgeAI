@@ -20,8 +20,6 @@ _From mathematical foundations to edge implementation_
 
 1 — Introduction
 
-1.1 — A Mathematical Perspective  
-
 2 — Mathematical Foundations
 
 3 — EdgeAI Implementation
@@ -325,17 +323,17 @@ pip install -r requirements.txt
 
 ### 3.5 - MoE Implementation
 
--  [![Jupyter](https://img.shields.io/badge/-Notebook-191A1B?style=flat-square&logo=jupyter)]( ) Mixture of Experts (MoE) System for Question Answering (step-by-step).
+-  [![Jupyter](https://img.shields.io/badge/-Notebook-191A1B?style=flat-square&logo=jupyter)](https://github.com/thommaskevin/EdgeAI/blob/main/09_MoE/code/moe.ipynb) Mixture of Experts (MoE) System for Question Answering (step-by-step).
 
 
 
 Copy the code in below and save as moe_system.py:
 
--  [![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)]( ) Mixture of Experts (MoE) System for Question Answering backend.
+-  [![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/09_MoE/code/moe_system.py) Mixture of Experts (MoE) System for Question Answering backend.
 
 Copy the code in below and save as app.py:
 
--  [![Streamlit](https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)]( ) Mixture of Experts (MoE) System for Question Answering user interface.
+-  [![Streamlit](https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/09_MoE/code/app.py) Mixture of Experts (MoE) System for Question Answering user interface.
 
 
 ### 3.6 - Run the application
