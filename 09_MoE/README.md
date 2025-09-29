@@ -18,11 +18,29 @@ _From mathematical foundations to edge implementation_
 
 ## SUMMARY
 
-1 — Introduction
+1 - Introduction
 
-2 — Mathematical Foundations
+ 1.1 - Why MoE?
+ 
+ 1.2 - Components of MoE
+ 
+2 - Mathematical Foundations
 
-3 — EdgeAI Implementation
+ 2.1 - Experts
+ 
+ 2.2 -Gating Network (Router) 
+ 
+ 2.3 - Training Objectives 
+ 
+ 2.4 - Gradient Flow
+ 
+ 2.5- Probabilistic Interpretation 
+ 
+ 2.6 - Sparse Routing and Top-k Selection 
+ 
+ 2.7 -Load Balancing
+ 
+3 - EdgeAI Implementation
 
 ---
 
