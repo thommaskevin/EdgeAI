@@ -358,17 +358,17 @@ pip install -r requirements.txt
 
 ### 3.5 - ViT Implementation
 
--  [![Jupyter](https://img.shields.io/badge/-Notebook-191A1B?style=flat-square&logo=jupyter)](https://github.com/thommaskevin/EdgeAI/blob/main/09_MoE/code/moe.ipynb) Vision Transformer From Scratch Implementation (step-by-step).
+-  [![Jupyter](https://img.shields.io/badge/-Notebook-191A1B?style=flat-square&logo=jupyter)](https://github.com/thommaskevin/EdgeAI/blob/main/10_ViT/code/ViT_from_scratch.ipynb) Vision Transformer From Scratch Implementation (step-by-step).
 
 
 
 Copy the code in below and save as vit_backend.py:
 
--  [![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/09_MoE/code/moe_system.py)  Vision Transformer backend.
+-  [![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/10_ViT/code/vit_backend.py)  Vision Transformer backend.
 
 Copy the code in below and save as vit_frontend.py:
 
--  [![Streamlit](https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/10_ViT/code/app.py)  Vision Transformer user interface.
+-  [![Streamlit](https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/10_ViT/code/vit_frontend.py)  Vision Transformer user interface.
 ................................................
 
 ### 3.6 - Run the application
