@@ -27,6 +27,7 @@ This repository contains experiments and implementations focused on **Edge AI** 
 | `07_ADD`          | Supporting tools, equations, and utility scripts for edge model evaluation.  |
 | `08_LoRa`         | Experiments with **LoRA** (Low-Rank Adaptation) for lightweight fine-tuning. |
 | `09_MoE`         | Experiments with **MoE** Mixture of Experts System for Question Answering . |
+| `10_ViT`         | Experiments with **ViT** Vision Transformer for image Classification. |
 
 ## 📌 Purpose
 
