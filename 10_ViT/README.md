@@ -369,7 +369,7 @@ Copy the code in below and save as vit_backend.py:
 Copy the code in below and save as vit_frontend.py:
 
 -  [![Streamlit](https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)](https://github.com/thommaskevin/EdgeAI/blob/main/10_ViT/code/vit_frontend.py)  Vision Transformer user interface.
-................................................
+
 
 ### 3.6 - Run the application
 
